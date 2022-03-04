@@ -1,13 +1,12 @@
 import discord
 from discord.ext import commands
 from javascript import require, On
-import json
 import asyncio
 from profanity_filter import ProfanityFilter
 import os
 from dotenv import load_dotenv
 
-load_dotenv("accdetails.env")
+load_dotenv()
 mineflayer = require("mineflayer","latest")
 
 ############
@@ -19,7 +18,7 @@ pf.censor_char = "#"
 
 class MainApp(commands.Bot):
     def __init__(self, host, port, email, password, version, token):
-        super().__init__(command_prefix="&", self_bot=False, activity=discord.Activity(type=discord.ActivityType.watching, name="Guild Chat"))
+        super().__init__(command_prefix="$", self_bot=False, activity=discord.Activity(type=discord.ActivityType.watching, name="Guild Chat"))
         self.host = host
         self.port = port
         self.email = email
@@ -46,6 +45,7 @@ class MainApp(commands.Bot):
 
         @self.event
         async def on_message(message):
+            await self.process_commands(message)
             if message.channel.id != ChannelID:
                 return
             if message.author.name == self.user.name:
@@ -71,6 +71,14 @@ class MainApp(commands.Bot):
                 else:
                     self.msg = f"**{username} > {self.splitmessage[0]} {self.splitmessage[1]}** {message.split(' ', 2)[2]}"
             self.new_msg = True
+        
+        @self.command()
+        async def say(ctx):
+            if ctx.message.author.id == 320666320280616960:
+                self.bot.chat(ctx.message.content.split(' ', 1)[1])
+                await ctx.send("Sent")
+            else:
+                await ctx.send("no perms + L + ratio + bozo")
 
         async def timer():
             await self.wait_until_ready()
