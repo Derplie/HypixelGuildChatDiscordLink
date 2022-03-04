@@ -2,12 +2,6 @@ import discord
 from discord.ext import commands
 from javascript import require, On
 import asyncio
-import spacy
-try:
-    en = spacy.load("en_core_web_md")
-except:
-    spacy.cli.download("en_core_web_md")
-    en = spacy.load("en_core_web_md")
 from profanity_filter import ProfanityFilter
 import os
 from dotenv import load_dotenv
