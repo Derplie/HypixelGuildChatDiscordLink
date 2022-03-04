@@ -4,6 +4,9 @@ from javascript import require, On
 import asyncio
 from profanity_filter import ProfanityFilter
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 mineflayer = require("mineflayer","latest")
 
 ############
@@ -90,9 +93,9 @@ class MainApp(commands.Bot):
         self.loop.create_task(coro=timer())
         
 if __name__ == "__main__":
-    email = os.environ["EMAIL"]
-    pswd = os.environ["PSWD"]
-    token = os.environ["TOKEN"]
+    email = os.getenv("EMAIL")
+    pswd = os.getenv("PSWD")
+    token = os.getenv("TOKEN")
     App = MainApp(host="hypixel.net",port=25565,email=email,password=pswd,version="1.8.9",token=token)
     App.StartMinecraftClient()
     App.Listener(CHANNEL_ID)
