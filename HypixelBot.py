@@ -1,6 +1,9 @@
+print("big nono")
 import discord
 from discord.ext import commands
+print("ok1")
 from javascript import require, On
+print("this is where it could be dying")
 import asyncio
 from profanity_filter import ProfanityFilter
 import os
@@ -93,11 +96,17 @@ class MainApp(commands.Bot):
         self.loop.create_task(coro=timer())
         
 if __name__ == "__main__":
+    print("funny test 1")
     email = os.getenv("EMAIL")
     pswd = os.getenv("PSWD")
     token = os.getenv("TOKEN")
+    print("69 is a funny number")
     App = MainApp(host="hypixel.net",port=25565,email=email,password=pswd,version="1.8.9",token=token)
+    print("deez1")
     App.StartMinecraftClient()
+    print("deez2")
     App.Listener(CHANNEL_ID)
+    print("deez3")
     App.StartDiscordClient()
+    print("deez4")
 
