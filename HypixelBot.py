@@ -96,7 +96,7 @@ if __name__ == "__main__":
     email = os.getenv("EMAIL")
     pswd = os.getenv("PSWD")
     token = os.getenv("TOKEN")
-    #App = MainApp(host="hypixel.net",port=25565,email=email,password=pswd,version="1.8.9",token=token)
+    App = MainApp(host="hypixel.net",port=25565,email=email,password=pswd,version="1.8.9",token=token)
     #App.StartMinecraftClient()
     #App.Listener(CHANNEL_ID)
     App.StartDiscordClient()
