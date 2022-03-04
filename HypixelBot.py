@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from javascript import require, On
 import asyncio
-from profanity_filter import ProfanityFilter
 import os
 from dotenv import load_dotenv
 
@@ -12,9 +11,6 @@ mineflayer = require("mineflayer","latest")
 ############
 CHANNEL_ID = 948935430731100230
 ############
-
-pf = ProfanityFilter()
-pf.censor_char = "#"
 
 class MainApp(commands.Bot):
     def __init__(self, host, port, email, password, version, token):
@@ -50,7 +46,7 @@ class MainApp(commands.Bot):
                 return
             if message.author.name == self.user.name:
                 return
-            self.bot.chat(f"/gc {message.author.display_name} > {pf.censor(message.content)}")
+            self.bot.chat(f"/gc {message.author.display_name} > {message.content}")
         
         @On(self.bot, "chat")
         def handle(this, username, message, *args):
