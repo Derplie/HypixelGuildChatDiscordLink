@@ -38,11 +38,19 @@ class MainApp(commands.Bot):
     def Listener(self, ChannelID):
         self.msg = ""
         self.new_msg = False
+        self.online_players = list()
+
+        @self.command()
+        async def online(ctx):
+            await ctx.send("**Online Players: **" + ", ".join(self.online_players))
+            return
 
         @self.event
         async def on_message(message):
-            await self.process_commands(message)
             if message.channel.id != ChannelID:
+                return
+            await self.process_commands(message)
+            if message.content.startswith("$"):
                 return
             if message.author.name == self.user.name:
                 return
@@ -61,6 +69,13 @@ class MainApp(commands.Bot):
 
             if len(self.splitmessage) == 2:
                 self.msg = f"**{username} > {message}**"
+                if self.splitmessage[1] == "joined.":
+                    self.online_players.append(self.splitmessage[0])
+                if self.splitmessage[1] == "left.":
+                    try:
+                        self.online_players.remove(self.splitmessage[0])
+                    except ValueError:
+                        pass
             else:
                 if self.splitmessage[0] in ["[VIP]","[VIP+]","[MVP]","[MVP+]","[MVP++]"]:
                     self.msg = f"**{username} > {self.splitmessage[0]} {self.splitmessage[1]} {self.splitmessage[2]}** {message.split(' ', 3)[3]}"
