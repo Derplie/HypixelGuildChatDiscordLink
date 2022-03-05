@@ -1,5 +1,3 @@
 discord.py==1.7.3
 python-dotenv==0.17.1
 javascript==1!0.2.16
-spacy==2.3.7
-profanity-filter==1.3.3
