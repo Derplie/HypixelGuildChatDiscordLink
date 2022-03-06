@@ -70,7 +70,8 @@ class MainApp(commands.Bot):
             if len(self.splitmessage) == 2:
                 self.msg = f"**{username} > {message}**"
                 if self.splitmessage[1] == "joined.":
-                    self.online_players.append(self.splitmessage[0])
+                    if self.splitmessage[1] not in self.online_players:
+                        self.online_players.append(self.splitmessage[0])
                 if self.splitmessage[1] == "left.":
                     try:
                         self.online_players.remove(self.splitmessage[0])
