@@ -70,11 +70,11 @@ class MainApp(commands.Bot):
             if len(self.splitmessage) == 2:
                 self.msg = f"**{username} > {message}**"
                 if self.splitmessage[1] == "joined.":
-                    if self.splitmessage[1] not in self.online_players:
+                    if self.splitmessage[0] not in self.online_players:
                         self.online_players.append(self.splitmessage[0])
                 if self.splitmessage[1] == "left.":
-                    while self.splitmessage[1] in self.online_players:
-                        self.online_players.remove(self.splitmessage[1])
+                    while self.splitmessage[0] in self.online_players:
+                        self.online_players.remove(self.splitmessage[0])
             else:
                 if self.splitmessage[0] in ["[VIP]","[VIP+]","[MVP]","[MVP+]","[MVP++]"]:
                     self.msg = f"**{username} > {self.splitmessage[0]} {self.splitmessage[1]} {self.splitmessage[2]}** {message.split(' ', 3)[3]}"
