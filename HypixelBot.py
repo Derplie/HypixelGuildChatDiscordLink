@@ -73,10 +73,8 @@ class MainApp(commands.Bot):
                     if self.splitmessage[1] not in self.online_players:
                         self.online_players.append(self.splitmessage[0])
                 if self.splitmessage[1] == "left.":
-                    try:
+                    if self.splitmessage[1] in self.online_players:
                         self.online_players.remove(self.splitmessage[0])
-                    except ValueError:
-                        pass
             else:
                 if self.splitmessage[0] in ["[VIP]","[VIP+]","[MVP]","[MVP+]","[MVP++]"]:
                     self.msg = f"**{username} > {self.splitmessage[0]} {self.splitmessage[1]} {self.splitmessage[2]}** {message.split(' ', 3)[3]}"
