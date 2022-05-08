@@ -3,7 +3,11 @@ from discord.ext import commands
 from javascript import require, On
 import asyncio
 import os
+import requests
+import json
 from dotenv import load_dotenv
+import random
+import string
 
 load_dotenv()
 mineflayer = require("mineflayer","latest")
@@ -13,7 +17,7 @@ CHANNEL_ID = 948935430731100230
 ############
 
 class MainApp(commands.Bot):
-    def __init__(self, host, port, email, password, version, token):
+    def __init__(self, host, port, email, password, version, token, key, antisnipe_key=""):
         super().__init__(command_prefix="$", self_bot=False, activity=discord.Activity(type=discord.ActivityType.watching, name="Guild Chat"))
         self.host = host
         self.port = port
@@ -21,6 +25,8 @@ class MainApp(commands.Bot):
         self.pswd = password
         self.version = version
         self.token = token
+        self.api_key = key
+        self.antisnipe_key = antisnipe_key
     
     def StartDiscordClient(self):
         self.run(self.token)
@@ -63,7 +69,40 @@ class MainApp(commands.Bot):
             if username == self.bot.username:
                 return
             if username != "Guild":
-                return
+                if self.splitmessage[0] == "+bw":
+                    if len(self.splitmessage) < 2:
+                        self.bot.chat(f"/r Please use +bw USERNAME | {''.join(random.choices(string.ascii_lowercase + string.digits, k=15))}")
+                        return
+                    self.target_username = self.splitmessage[1]
+                    self.mojang_response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{self.target_username}")
+                    if int(self.mojang_response.status_code) in [404, 204]:
+                        self.bot.chat(f"/r That username isn't valid. | {''.join(random.choices(string.ascii_lowercase + string.digits, k=15))}")
+                        return
+                    try: 
+                        self.target_uuid = self.mojang_response.json()["id"]
+                    except:
+                        self.bot.chat(f"/r That username isn't valid. | {''.join(random.choices(string.ascii_lowercase + string.digits, k=15))}")
+                        return
+                    self.hypixel_response = requests.get(f"https://api.slothpixel.me/api/players/{self.target_uuid}?key={self.api_key}").json()
+                    if "error" in self.hypixel_response:
+                        self.bot.chat(f"/r Error: {self.hypixel_response['error']} | {''.join(random.choices(string.ascii_lowercase + string.digits, k=15))}")
+                        return
+                    if not "stats" in self.hypixel_response:
+                        self.bot.chat(f"/r That player hasn't joined Hypixel before. | {''.join(random.choices(string.ascii_lowercase + string.digits, k=15))}")
+                        return
+                    self.bedwars_stats = self.hypixel_response["stats"]["BedWars"]
+                    if self.antisnipe_key != "":
+                        self.antisnipe_response = requests.get(f'http://api.antisniper.net/winstreak?key={self.antisnipe_key}&uuid={self.target_uuid}').json()
+                        if self.antisnipe_response["success"] == False or self.antisnipe_response["player"] == None:
+                            self.target_winstreak = self.bedwars_stats["winstreak"]
+                        else:
+                            self.target_winstreak = self.antisnipe_response["player"]["data"]["overall_winstreak"]
+                    else:
+                        self.target_winstreak = self.bedwars_stats["winstreak"]
+                    self.bot.chat(f"/r [{self.bedwars_stats['level']}✫] {self.mojang_response.json()['name']} | FKDR: {self.bedwars_stats['final_k_d']} | WINSTREAK: {self.target_winstreak} | FINALS: {self.bedwars_stats['final_kills']} | {''.join(random.choices(string.ascii_lowercase + string.digits, k=15))}")
+                    return
+                else:
+                    return
             if self.splitmessage[1] == self.bot.username:
                 return
 
@@ -84,7 +123,7 @@ class MainApp(commands.Bot):
         
         @self.command()
         async def say(ctx):
-            if ctx.message.author.id == 320666320280616960:
+            if ctx.message.author.id in [320666320280616960, 636626595066413066]:
                 self.bot.chat(ctx.message.content.split(' ', 1)[1])
                 await ctx.send("Sent")
             else:
@@ -106,8 +145,9 @@ if __name__ == "__main__":
     email = os.getenv("EMAIL")
     pswd = os.getenv("PSWD")
     token = os.getenv("TOKEN")
-    App = MainApp(host="hypixel.net",port=25565,email=email,password=pswd,version="1.8.9",token=token)
+    key = os.getenv("KEY")
+    antisnipe_key = os.getenv("ANTISNIPE_KEY")
+    App = MainApp(host="hypixel.net",port=25565,email=email,password=pswd,version="1.8.9",token=token,key=key,antisnipe_key=antisnipe_key)
     App.StartMinecraftClient()
     App.Listener(CHANNEL_ID)
     App.StartDiscordClient()
-
